@@ -6,5 +6,8 @@ package com.ict.db.common;
  */
 public interface MessageType {
     String LOGIN_SUCCESS="1";
+
     String LOGIN_FAILURE="2";
+
+    String COMMON_CHAT_MESSAGE="3";
 }

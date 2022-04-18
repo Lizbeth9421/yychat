@@ -4,6 +4,7 @@ import com.ict.db.common.MessageType;
 import com.ict.db.domain.Message;
 import com.ict.db.domain.User;
 
+import javax.jnlp.FileContents;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
@@ -15,7 +16,7 @@ import java.net.Socket;
  */
 @SuppressWarnings("all")
 public class ClientConnection {
-    Socket s;
+    public static Socket s;
 
     public ClientConnection() {
         try {
@@ -43,6 +44,11 @@ public class ClientConnection {
             Message message=(Message)objectInputStream.readObject();
             if (message.getMessageType().equals(MessageType.LOGIN_SUCCESS)){
                 loginSuccess=true;
+                //创建客户端接收线程，用来接收从服务器端发来信息
+                new ClientReceiverThread(s).start();
+            }else {
+                //登陆密码验证失败，关闭客户端的 Socket 对象
+                s.close();
             }
         }catch (Exception e){
             e.printStackTrace();

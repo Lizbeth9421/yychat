@@ -11,5 +11,11 @@ import java.io.Serializable;
  */
 @Data
 public class Message implements Serializable, MessageType {
+    private String sender;
+
+    private String receiver;
+
+    private String content;
+
     private String messageType;
 }

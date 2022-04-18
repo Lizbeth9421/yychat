@@ -43,6 +43,8 @@ public class StartServer extends JFrame implements ActionListener {
             new ChatServer();
         }
     }
+
+
     public static void main(String[] args) {
         new StartServer();
     }

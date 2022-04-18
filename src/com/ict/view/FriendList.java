@@ -6,6 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.HashMap;
 
 /**
  * 好友列表
@@ -14,7 +15,10 @@ import java.awt.event.MouseListener;
  * @Date: 2022/04/02/11:08
  */
 @SuppressWarnings("all")
-public class FriendList extends JFrame implements ActionListener , MouseListener {
+public class FriendList extends JFrame implements ActionListener, MouseListener {
+    //定义 HashMap 对象，用来保存 name+toname 和好友聊天界面
+    public static HashMap<String, FriendChat> friendChatHashMap = new HashMap<>();
+
     //定义卡片1（好友面板）中的组件
     JPanel friendPanel;//卡片1的组件容器
     JButton myFriendButton1, myStrangerButton1, blackListButtom1;
@@ -38,7 +42,7 @@ public class FriendList extends JFrame implements ActionListener , MouseListener
     String name;
 
     public FriendList(String name) {
-        this.name=name;
+        this.name = name;
         //创建好友面板中的组件
         friendPanel = new JPanel(new BorderLayout());
         myFriendButton1 = new JButton("我的好友");
@@ -48,7 +52,7 @@ public class FriendList extends JFrame implements ActionListener , MouseListener
         for (int i = 0; i < friendLabel.length; i++) {
             String imageUrl = "resources/" + (int) (Math.random() * 6) + ".jpg";//随机生成图片路径
             ImageIcon imageIcon = new ImageIcon(imageUrl);
-            friendLabel[i] = new JLabel(i + "号好友", imageIcon, JLabel.LEFT);
+            friendLabel[i] = new JLabel(i + "", imageIcon, JLabel.LEFT);
             friendListPanel.add(friendLabel[i]);//好友图标添加到好友列表
             //为每一个好友标签组件上添加鼠标监听器
             friendLabel[i].addMouseListener(this);
@@ -97,17 +101,17 @@ public class FriendList extends JFrame implements ActionListener , MouseListener
         cardLayout.show(this.getContentPane(), "card1");
 
         this.setIconImage(new ImageIcon("resources/duck2.gif").getImage());
-        this.setTitle(name+"好友列表");
+        this.setTitle(name + "好友列表");
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setBounds(800, 600, 350, 250);
         this.setVisible(true);
     }
 
 
-
     public static void main(String[] args) {
         //new FriendList("");
     }
+
     @Override
     public void actionPerformed(final ActionEvent e) {
         if (e.getSource() == myFriendButton2) {
@@ -120,10 +124,12 @@ public class FriendList extends JFrame implements ActionListener , MouseListener
 
     @Override
     public void mouseClicked(final MouseEvent e) {
-        if (e.getClickCount() == 1){//双击鼠标左键时
+        if (e.getClickCount() == 1) {//双击鼠标左键时
             final JLabel source = (JLabel) e.getSource();//获得被双击好友的标签组件
-            String toName=source.getText();//拿到好友的名字
-            new FriendChat(name+"to"+toName);//创建好友聊天界面
+            String toName = source.getText();//拿到好友的名字
+            FriendChat chat = new FriendChat(name, toName);//创建好友聊天界面
+            //将好友聊天界面添加到好友聊天界面的HashMap中
+            friendChatHashMap.put(name+"to"+toName, chat);
         }
     }
 
