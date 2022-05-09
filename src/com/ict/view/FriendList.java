@@ -1,5 +1,7 @@
 package com.ict.view;
 
+import com.ict.db.domain.Message;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -50,9 +52,13 @@ public class FriendList extends JFrame implements ActionListener, MouseListener 
         //创建中间的好友列表滚动条面板
         friendListPanel = new JPanel(new GridLayout(MYFRIEND_COUNT, 1));//好友列表50行1列
         for (int i = 0; i < friendLabel.length; i++) {
-            String imageUrl = "resources/" + (int) (Math.random() * 6) + ".jpg";//随机生成图片路径
+            //String imageUrl = "resources/" + (int) (Math.random() * 6) + ".jpg";//随机生成图片路径
+            String imageUrl = "resources/" + i % 6 + ".jpg";//好友图标使用固定的图片
             ImageIcon imageIcon = new ImageIcon(imageUrl);
             friendLabel[i] = new JLabel(i + "", imageIcon, JLabel.LEFT);
+            if (i != Integer.valueOf(name)) {
+                friendLabel[i].setEnabled(false);//好友图标设置为非激活的状态
+            }
             friendListPanel.add(friendLabel[i]);//好友图标添加到好友列表
             //为每一个好友标签组件上添加鼠标监听器
             friendLabel[i].addMouseListener(this);
@@ -112,6 +118,19 @@ public class FriendList extends JFrame implements ActionListener, MouseListener 
         //new FriendList("");
     }
 
+    public void activeNewOnlineFriendIcon(String newOnlineFriend) {
+        this.friendLabel[Integer.valueOf(newOnlineFriend)].setEnabled(true);
+    }
+
+    public void activeOnlineFriendIcon(Message message) {
+        String onlineFriend = message.getContent();
+        String[] onlineFriendName = onlineFriend.split(" ");
+        //激活全部在线好友图标
+        for (int i = 1; i < onlineFriendName.length; i++) {
+            this.friendLabel[Integer.valueOf(onlineFriendName[i])].setEnabled(true);
+        }
+    }
+
     @Override
     public void actionPerformed(final ActionEvent e) {
         if (e.getSource() == myFriendButton2) {
@@ -129,7 +148,7 @@ public class FriendList extends JFrame implements ActionListener, MouseListener 
             String toName = source.getText();//拿到好友的名字
             FriendChat chat = new FriendChat(name, toName);//创建好友聊天界面
             //将好友聊天界面添加到好友聊天界面的HashMap中
-            friendChatHashMap.put(name+"to"+toName, chat);
+            friendChatHashMap.put(name + "to" + toName, chat);
         }
     }
 
@@ -146,12 +165,12 @@ public class FriendList extends JFrame implements ActionListener, MouseListener 
     @Override
     public void mouseEntered(final MouseEvent e) {//鼠标进入好友标签组件时
         final JLabel source = (JLabel) e.getSource();
-        source.setForeground(Color.red);
+        source.setForeground(Color.red);//好友名字为红色
     }
 
     @Override
     public void mouseExited(final MouseEvent e) {//鼠标离开好友标签组件时
         final JLabel source = (JLabel) e.getSource();
-        source.setForeground(Color.blue);
+        source.setForeground(Color.blue);//好友名字为蓝色
     }
 }

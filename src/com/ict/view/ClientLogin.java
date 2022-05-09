@@ -1,5 +1,7 @@
 package com.ict.view;
 
+import com.ict.db.common.MessageType;
+import com.ict.db.domain.Message;
 import com.ict.db.domain.User;
 import com.ict.server.control.ClientConnection;
 import org.apache.ibatis.session.SqlSessionFactory;
@@ -8,6 +10,10 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
+import java.util.HashMap;
 
 /**
  * @Author: Lizbeth9421
@@ -29,6 +35,7 @@ public class ClientLogin extends JFrame implements ActionListener {
     JPanel YYNumberPanel, phoneNumberPanel, emailPanel;
     JTabbedPane tabledPane;
 
+    public static HashMap<String, FriendList> hmFriendList = new HashMap<>();
 
     public ClientLogin() {
 
@@ -106,12 +113,30 @@ public class ClientLogin extends JFrame implements ActionListener {
             //创建ClientConnection对象，和服务器建立联系
             ClientConnection connection = new ClientConnection();
             if (connection.loginValidate(user)) {
-                //创建好友面板
-                new FriendList(name);
-                this.dispose();
-            }else {
-                JOptionPane.showMessageDialog(this,"密码错误，请重新登录！");
+                hmFriendList.put(name, new FriendList(name));
+                System.out.println("客户端登陆成功！");
+                Message mess = new Message();
+                mess.setSender(name);
+                mess.setReceiver("Server");
+                mess.setMessageType(MessageType.REQUEST_ONLINE_FRIEND);//设置消息类型
+                //使用 sendMessage()方法发送消息
+                sendMessage(ClientConnection.s, mess);
+                mess.setMessageType(MessageType.NEW_ONLINE_TO_ALL_FRIEND);
+                sendMessage(ClientConnection.s, mess);
+                this.dispose();//关闭登陆界面
+            } else {
+                JOptionPane.showMessageDialog(this, "密码错误，请重新登录！");
             }
+        }
+    }
+
+    public void sendMessage(final Socket s, final Message mess) {
+        ObjectOutputStream oos;
+        try {
+            oos = new ObjectOutputStream(s.getOutputStream());
+            oos.writeObject(mess);//发送消息
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
