@@ -56,9 +56,9 @@ public class FriendList extends JFrame implements ActionListener, MouseListener 
             String imageUrl = "resources/" + i % 6 + ".jpg";//好友图标使用固定的图片
             ImageIcon imageIcon = new ImageIcon(imageUrl);
             friendLabel[i] = new JLabel(i + "", imageIcon, JLabel.LEFT);
-            if (i != Integer.valueOf(name)) {
-                friendLabel[i].setEnabled(false);//好友图标设置为非激活的状态
-            }
+            //if (i != Integer.valueOf(name)) {
+            friendLabel[i].setEnabled(false);//好友图标设置为非激活的状态
+            //}
             friendListPanel.add(friendLabel[i]);//好友图标添加到好友列表
             //为每一个好友标签组件上添加鼠标监听器
             friendLabel[i].addMouseListener(this);
@@ -119,7 +119,7 @@ public class FriendList extends JFrame implements ActionListener, MouseListener 
     }
 
     public void activeNewOnlineFriendIcon(String newOnlineFriend) {
-        this.friendLabel[Integer.valueOf(newOnlineFriend)].setEnabled(true);
+        //this.friendLabel[Integer.valueOf(newOnlineFriend)].setEnabled(true);
     }
 
     public void activeOnlineFriendIcon(Message message) {
@@ -127,7 +127,7 @@ public class FriendList extends JFrame implements ActionListener, MouseListener 
         String[] onlineFriendName = onlineFriend.split(" ");
         //激活全部在线好友图标
         for (int i = 1; i < onlineFriendName.length; i++) {
-            this.friendLabel[Integer.valueOf(onlineFriendName[i])].setEnabled(true);
+            //this.friendLabel[Integer.valueOf(onlineFriendName[i])].setEnabled(true);
         }
     }
 

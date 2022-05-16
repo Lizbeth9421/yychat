@@ -1,10 +1,10 @@
 package com.ict.view;
 
 import com.ict.db.common.MessageType;
+import com.ict.db.common.UserType;
 import com.ict.db.domain.Message;
 import com.ict.db.domain.User;
 import com.ict.server.control.ClientConnection;
-import org.apache.ibatis.session.SqlSessionFactory;
 
 import javax.swing.*;
 import java.awt.*;
@@ -45,9 +45,12 @@ public class ClientLogin extends JFrame implements ActionListener {
         this.add(head, "North");
         //创建登录按钮
         loginButton = new JButton(new ImageIcon("resources/login.gif"));
-        loginButton.addActionListener(this);//注册按钮事件监听
+        //注册按钮事件监听
+        loginButton.addActionListener(this);
         //创建注册按钮
         registerButton = new JButton(new ImageIcon("resources/register.gif"));
+        //注册按钮事件监听
+        registerButton.addActionListener(this);
         //创建取消按钮
         cancelButton = new JButton(new ImageIcon("resources/cancel.gif"));
         //创建一个面板对象
@@ -105,14 +108,14 @@ public class ClientLogin extends JFrame implements ActionListener {
 
     @Override
     public void actionPerformed(final ActionEvent e) {
+        String name = textField.getText();
+        String password = new String(this.passwordField.getPassword());
+        //封装User对象
+        User user = new User(name, password);
         if (e.getSource() == loginButton) {
-            String name = textField.getText();
-            String password = new String(this.passwordField.getPassword());
-            //封装User对象
-            User user = new User(name, password);
+            user.setUserType(UserType.USER_LOGIN_VALIDATE);
             //创建ClientConnection对象，和服务器建立联系
-            ClientConnection connection = new ClientConnection();
-            if (connection.loginValidate(user)) {
+            if (new ClientConnection().loginValidate(user)) {
                 hmFriendList.put(name, new FriendList(name));
                 System.out.println("客户端登陆成功！");
                 Message mess = new Message();
@@ -126,6 +129,14 @@ public class ClientLogin extends JFrame implements ActionListener {
                 this.dispose();//关闭登陆界面
             } else {
                 JOptionPane.showMessageDialog(this, "密码错误，请重新登录！");
+            }
+        } else if (e.getSource() == registerButton) {
+            //设置 user 对象类型
+            user.setUserType(UserType.USER_REGISTER);
+            if (new ClientConnection().registerUser(user)) {//注册成功
+                JOptionPane.showMessageDialog(this, name + " 用户，注册成功了！");
+            } else {
+                JOptionPane.showMessageDialog(this, name + " 用户名重复，请重新注册！");
             }
         }
     }

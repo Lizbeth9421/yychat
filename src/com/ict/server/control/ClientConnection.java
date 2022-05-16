@@ -4,7 +4,7 @@ import com.ict.db.common.MessageType;
 import com.ict.db.domain.Message;
 import com.ict.db.domain.User;
 
-import javax.jnlp.FileContents;
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
@@ -21,16 +21,16 @@ public class ClientConnection {
     public ClientConnection() {
         try {
             //创建Socket对象，和服务器建立连接
-            s=new Socket("127.0.0.1",9421);
-            System.out.println("客户端连接成功"+s);
-        }catch (Exception e){
+            s = new Socket("127.0.0.1", 9421);
+            System.out.println("客户端连接成功" + s);
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public boolean loginValidate(User user){
+    public boolean loginValidate(User user) {
         //默认登录失败
-        boolean loginSuccess=false;
+        boolean loginSuccess = false;
         try {
             //通过Socket获取字节输出流对象
             final OutputStream outputStream = s.getOutputStream();
@@ -41,18 +41,41 @@ public class ClientConnection {
 
             //接受服务端发送的信息，信息为message对象
             ObjectInputStream objectInputStream = new ObjectInputStream(s.getInputStream());
-            Message message=(Message)objectInputStream.readObject();
-            if (message.getMessageType().equals(MessageType.LOGIN_SUCCESS)){
-                loginSuccess=true;
+            Message message = (Message) objectInputStream.readObject();
+            if (message.getMessageType().equals(MessageType.LOGIN_SUCCESS)) {
+                loginSuccess = true;
                 //创建客户端接收线程，用来接收从服务器端发来信息
                 new ClientReceiverThread(s).start();
-            }else {
+            } else {
                 //登陆密码验证失败，关闭客户端的 Socket 对象
                 s.close();
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return loginSuccess;
+    }
+
+
+    public boolean registerUser(User user) {
+        boolean registerSuccess = false;
+        //发送User对象
+        try {
+            OutputStream outputStream = s.getOutputStream();
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
+            objectOutputStream.writeObject(user);//向服务器端发送 user 对象
+            ObjectInputStream objectInputStream = new ObjectInputStream(s.getInputStream());
+            //接收服务器端发送的 Message 对象
+            Message message = (Message) objectInputStream.readObject();
+            if (message.getMessageType().equals(MessageType.USER_REGISTER_SUCCESS)) {
+                //注册成功
+                registerSuccess = true;
+            }
+            //不管注册是否成功，都要关闭客户端的 Socket 对象
+            s.close();
+        } catch (IOException | ClassNotFoundException ioException) {
+            ioException.printStackTrace();
+        }
+        return registerSuccess;
     }
 }
