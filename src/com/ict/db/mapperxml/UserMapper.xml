@@ -87,4 +87,5 @@
         from user
         where username = #{username,jdbcType=VARCHAR}
     </select>
+
 </mapper>

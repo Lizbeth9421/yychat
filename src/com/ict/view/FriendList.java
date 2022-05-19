@@ -43,25 +43,26 @@ public class FriendList extends JFrame implements ActionListener, MouseListener 
 
     String name;
 
-    public FriendList(String name) {
+    public FriendList(String name,String allFriends) {
         this.name = name;
         //创建好友面板中的组件
         friendPanel = new JPanel(new BorderLayout());
         myFriendButton1 = new JButton("我的好友");
         friendPanel.add(myFriendButton1, "North");
         //创建中间的好友列表滚动条面板
-        friendListPanel = new JPanel(new GridLayout(MYFRIEND_COUNT, 1));//好友列表50行1列
-        for (int i = 0; i < friendLabel.length; i++) {
-            //String imageUrl = "resources/" + (int) (Math.random() * 6) + ".jpg";//随机生成图片路径
+        //friendListPanel = new JPanel(new GridLayout(MYFRIEND_COUNT, 1));//好友列表50行1列
+        String[] myFriend = allFriends.split(" ");
+        friendListPanel=new JPanel(new GridLayout(myFriend.length-1,1));
+        for (int i = 1; i <myFriend.length; i++) {
             String imageUrl = "resources/" + i % 6 + ".jpg";//好友图标使用固定的图片
             ImageIcon imageIcon = new ImageIcon(imageUrl);
-            friendLabel[i] = new JLabel(i + "", imageIcon, JLabel.LEFT);
+            friendLabel[i] = new JLabel(myFriend[i] + "", imageIcon, JLabel.LEFT);
             //if (i != Integer.valueOf(name)) {
-            friendLabel[i].setEnabled(false);//好友图标设置为非激活的状态
+            //friendLabel[i].setEnabled(false);//好友图标设置为非激活的状态
             //}
             friendListPanel.add(friendLabel[i]);//好友图标添加到好友列表
             //为每一个好友标签组件上添加鼠标监听器
-            friendLabel[i].addMouseListener(this);
+            //friendLabel[i].addMouseListener(this);
         }
         friendListScrollPane = new JScrollPane(friendListPanel);//创建好友滚动条面板
         friendPanel.add(friendListScrollPane, "Center");

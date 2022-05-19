@@ -3,6 +3,8 @@ package com.ict.db.mapper;
 import com.ict.db.domain.User;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
+
 /**
  * @Author: Lizbeth9421
  * @Date: 2022/05/16/9:13

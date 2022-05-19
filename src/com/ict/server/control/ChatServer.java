@@ -58,13 +58,15 @@ public class ChatServer {
                 if (user.getUserType().equals(UserType.USER_LOGIN_VALIDATE)) {//用户登陆验证
                     if (isLoginSuccess(username, password)) {
                         System.out.println("密码验证通过");
-                        message.setMessageType(MessageType.LOGIN_SUCCESS);
+                        String allFriends = DbUtils.seekAllFriends(username, 1);
+                        message.setContent(allFriends);
+                        message.setMessageType(MessageType.LOGIN_SUCCESS);//登陆验证成功
                         //发送message对象到客户端
                         outputStream.writeObject(message);
                         //保存登陆成功的新用户名和 Socket对象类
-                        hmSocket.put(username, s);
+                        hmSocket.put(username, this.s);
                         //由于可能有多个客户同时向服务器发送信息,需要为每一个用户创建接收线程
-                        new ServerReceiverThread(s).start();
+                        new ServerReceiverThread(this.s).start();
                         System.out.println("启动线程成功");
                     } else {
                         System.out.println("密码验证失败");

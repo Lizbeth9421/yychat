@@ -56,6 +56,24 @@ public class ClientConnection {
         return loginSuccess;
     }
 
+    public Message loginValidate1(User user) {
+        Message message = null;
+        try {
+            OutputStream os = s.getOutputStream();//通过 Socket 获得字节输出流对象
+            ObjectOutputStream oos = new ObjectOutputStream(os);//把字节输出流包装成对象输出流对象
+            oos.writeObject(user);//向服务器端发送 user 对象
+            ObjectInputStream ois = new ObjectInputStream(s.getInputStream());
+            message = (Message) ois.readObject();//接收服务器端发送的 Message 对象
+            if (message.getMessageType().equals(MessageType.LOGIN_SUCCESS)) {
+                new ClientReceiverThread(s).start();
+            } else {
+                s.close();//登陆密码验证失败，关闭客户端的 Socket 对象
+            }
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return message;
+    }
 
     public boolean registerUser(User user) {
         boolean registerSuccess = false;

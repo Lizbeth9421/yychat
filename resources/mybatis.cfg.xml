@@ -31,5 +31,6 @@
     <!-- 配置映射 -->
     <mappers>
         <mapper resource="com/ict/db/mapperxml/UserMapper.xml"></mapper>
+        <mapper resource="com/ict/db/mapperxml/UserRelationMapper.xml"></mapper>
     </mappers>
 </configuration>

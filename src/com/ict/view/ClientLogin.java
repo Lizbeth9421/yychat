@@ -113,23 +113,33 @@ public class ClientLogin extends JFrame implements ActionListener {
         //封装User对象
         User user = new User(name, password);
         if (e.getSource() == loginButton) {
-            user.setUserType(UserType.USER_LOGIN_VALIDATE);
-            //创建ClientConnection对象，和服务器建立联系
-            if (new ClientConnection().loginValidate(user)) {
-                hmFriendList.put(name, new FriendList(name));
-                System.out.println("客户端登陆成功！");
-                Message mess = new Message();
-                mess.setSender(name);
-                mess.setReceiver("Server");
-                mess.setMessageType(MessageType.REQUEST_ONLINE_FRIEND);//设置消息类型
-                //使用 sendMessage()方法发送消息
-                sendMessage(ClientConnection.s, mess);
-                mess.setMessageType(MessageType.NEW_ONLINE_TO_ALL_FRIEND);
-                sendMessage(ClientConnection.s, mess);
+            user.setUserType(UserType.USER_LOGIN_VALIDATE);//设置 user 对象类型
+            Message message = new ClientConnection().loginValidate1(user);
+            if (message.getMessageType().equals(MessageType.LOGIN_SUCCESS)) {//登录成功
+                String allFriend = message.getContent();//登录端拿到全部好友名字
+                FriendList friendList = new FriendList(name, allFriend);//把好友名字传到好友列表窗体
+                hmFriendList.put(name, friendList);//把好友列表窗体放入map中
                 this.dispose();//关闭登陆界面
             } else {
-                JOptionPane.showMessageDialog(this, "密码错误，请重新登录！");
+                JOptionPane.showMessageDialog(this, "密码错误，请重新登陆！");
             }
+            /*
+                //创建ClientConnection对象，和服务器建立联系
+                if (new ClientConnection().loginValidate(user)) {
+                    hmFriendList.put(name, new FriendList(name));
+                    Message mess = new Message();
+                    mess.setSender(name);
+                    mess.setReceiver("Server");
+                    mess.setMessageType(MessageType.REQUEST_ONLINE_FRIEND);//设置消息类型
+                    //使用 sendMessage()方法发送消息
+                    sendMessage(ClientConnection.s, mess);
+                    mess.setMessageType(MessageType.NEW_ONLINE_TO_ALL_FRIEND);
+                    sendMessage(ClientConnection.s, mess);
+                    this.dispose();//关闭登陆界面
+                } else {
+                    JOptionPane.showMessageDialog(this, "密码错误，请重新登录！");
+                }
+            */
         } else if (e.getSource() == registerButton) {
             //设置 user 对象类型
             user.setUserType(UserType.USER_REGISTER);

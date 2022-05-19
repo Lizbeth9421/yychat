@@ -1,7 +1,10 @@
 package test;
 
+import com.ict.db.mapper.UserMapper;
+import com.ict.db.util.DbUtils;
 import com.ict.db.util.MyBatisUtil;
 import org.apache.ibatis.session.SqlSession;
+import org.junit.jupiter.api.Test;
 
 /**
  * @Author: Lizbeth9421
@@ -9,12 +12,10 @@ import org.apache.ibatis.session.SqlSession;
  */
 public class test {
 
-    //SqlSession sqlsession= MyBatisUtil.getSqlSession();
-    //UserMapper usermapper=sqlsession.getMapper(UserMapper.class);
-    //@Test
-    //public void test(){
-    //    System.out.println(usermapper.queryAll());
-    //    MyBatisUtil.close(sqlsession);
-    //}
+    @Test
+    public void test(){
+        String friends = DbUtils.seekAllFriends("mai", 1);
+        System.out.println(friends);
+    }
 }
 
