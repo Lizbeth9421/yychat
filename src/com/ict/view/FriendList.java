@@ -1,6 +1,8 @@
 package com.ict.view;
 
+import com.ict.db.common.MessageType;
 import com.ict.db.domain.Message;
+import com.ict.server.control.ClientConnection;
 
 import javax.swing.*;
 import java.awt.*;
@@ -8,6 +10,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.HashMap;
 
 /**
@@ -43,27 +47,39 @@ public class FriendList extends JFrame implements ActionListener, MouseListener 
 
     String name;
 
-    public FriendList(String name,String allFriends) {
+    //定义添加好友面板和按钮
+    JPanel addFriendJPanel;
+    JButton addFriendButton;
+
+    public FriendList(String name, String allFriends) {
         this.name = name;
         //创建好友面板中的组件
-        friendPanel = new JPanel(new BorderLayout());
+        friendPanel = new JPanel(new BorderLayout());//卡片 1 设置边界布局模式
+
+        addFriendJPanel = new JPanel(new GridLayout(2, 1));//添加好友面板设置为网格布局
+        addFriendButton = new JButton("添加好友");
+        addFriendButton.addActionListener(this);//在添加好友按钮上注册监听器对象
         myFriendButton1 = new JButton("我的好友");
-        friendPanel.add(myFriendButton1, "North");
-        //创建中间的好友列表滚动条面板
-        //friendListPanel = new JPanel(new GridLayout(MYFRIEND_COUNT, 1));//好友列表50行1列
-        String[] myFriend = allFriends.split(" ");
-        friendListPanel=new JPanel(new GridLayout(myFriend.length-1,1));
-        for (int i = 1; i <myFriend.length; i++) {
-            String imageUrl = "resources/" + i % 6 + ".jpg";//好友图标使用固定的图片
-            ImageIcon imageIcon = new ImageIcon(imageUrl);
-            friendLabel[i] = new JLabel(myFriend[i] + "", imageIcon, JLabel.LEFT);
-            //if (i != Integer.valueOf(name)) {
-            //friendLabel[i].setEnabled(false);//好友图标设置为非激活的状态
-            //}
-            friendListPanel.add(friendLabel[i]);//好友图标添加到好友列表
-            //为每一个好友标签组件上添加鼠标监听器
-            //friendLabel[i].addMouseListener(this);
-        }
+        //friendPanel.add(myFriendButton1, "North");
+        friendPanel.add(addFriendButton, "North");
+        friendListPanel = new JPanel();
+        showAllFriends(allFriends);
+        /*
+            //创建中间的好友列表滚动条面板
+            String[] myFriend = allFriends.split(" ");
+            friendListPanel=new JPanel(new GridLayout(myFriend.length-1,1));
+            for (int i = 1; i <myFriend.length; i++) {
+                String imageUrl = "resources/" + i % 6 + ".jpg";//好友图标使用固定的图片
+                ImageIcon imageIcon = new ImageIcon(imageUrl);
+                friendLabel[i] = new JLabel(myFriend[i] + "", imageIcon, JLabel.LEFT);
+                //if (i != Integer.valueOf(name)) {
+                //friendLabel[i].setEnabled(false);//好友图标设置为非激活的状态
+                //}
+                friendListPanel.add(friendLabel[i]);//好友图标添加到好友列表
+                //为每一个好友标签组件上添加鼠标监听器
+                //friendLabel[i].addMouseListener(this);
+            }
+        */
         friendListScrollPane = new JScrollPane(friendListPanel);//创建好友滚动条面板
         friendPanel.add(friendListScrollPane, "Center");
 
@@ -114,6 +130,22 @@ public class FriendList extends JFrame implements ActionListener, MouseListener 
         this.setVisible(true);
     }
 
+    public void showAllFriends(final String allFriends) {
+        String[] myFriend = allFriends.split(" ");
+        friendListPanel.removeAll();//在好友列表面板中移去全部组件
+        friendListPanel.setLayout(new GridLayout(myFriend.length - 1, 1));
+        for (int i = 1; i < myFriend.length; i++) {
+            String imageUrl = "resources/" + i % 6 + ".jpg";//好友图标使用固定的图片
+            ImageIcon imageIcon = new ImageIcon(imageUrl);
+            friendLabel[i] = new JLabel(myFriend[i] + "", imageIcon, JLabel.LEFT);
+            friendListPanel.add(friendLabel[i]);//好友图标添加到好友列表
+            //为每一个好友标签组件上添加鼠标监听器
+            friendLabel[i].addMouseListener(this);
+        }
+        //让好友列表面板中的组件重新生效
+        friendListPanel.revalidate();
+    }
+
 
     public static void main(String[] args) {
         //new FriendList("");
@@ -139,6 +171,23 @@ public class FriendList extends JFrame implements ActionListener, MouseListener 
         }
         if (e.getSource() == myStrangerButton1) {
             cardLayout.show(this.getContentPane(), "card2");
+        }
+        if (e.getSource() == addFriendButton) {
+            String newFriend = JOptionPane.showInputDialog("请输入新好友的名字：");//在输入框中输入信号有的名字
+            System.out.println("newFriend:" + newFriend);
+            if (newFriend != null) {
+                Message message = new Message();
+                message.setSender(name);
+                message.setReceiver("server");
+                message.setContent(newFriend);//新好名字保存在content字段中
+                message.setMessageType(MessageType.ADD_NEW_FRIEND);//设置消息类型（添加新好友）
+                try {
+                    ObjectOutputStream objectOutputStream = new ObjectOutputStream(ClientConnection.s.getOutputStream());
+                    objectOutputStream.writeObject(message);
+                } catch (IOException exception) {
+                    exception.printStackTrace();
+                }
+            }
         }
     }
 

@@ -90,4 +90,13 @@
         where masterUser = #{masterUser,jdbcType=VARCHAR}
           and relation = #{relation,jdbcType=INTEGER}
     </select>
+
+    <select id="seekFriendIsExit" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from userrelation
+        where masterUser = #{sender,jdbcType=VARCHAR}
+          and slaveUser = #{newFriend,jdbcType=VARCHAR}
+          and relation = #{friendType,jdbcType=INTEGER}
+    </select>
 </mapper>

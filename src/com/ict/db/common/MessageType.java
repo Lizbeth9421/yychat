@@ -4,6 +4,7 @@ package com.ict.db.common;
  * @Author: Lizbeth9421
  * @Date: 2022/04/17/17:08
  */
+@SuppressWarnings("all")
 public interface MessageType {
     String LOGIN_SUCCESS="1";
 
@@ -21,8 +22,13 @@ public interface MessageType {
 
     String USER_REGISTER_SUCCESS="8";
 
-
     String USER_REGISTER_FAILURE="9";
 
+    String ADD_NEW_FRIEND="10";//客户端发送到服务器的请求添加新好友消息
 
+    String ADD_NEW_FRIEND_FAILURE_NO_USER="11";//新增好友失败（用户不存在）
+
+    String ADD_NEW_FRIEND_FAILURE_ALREADY_FRIEND="12";//新增好友失败（用户已经是好友了）
+
+    String ADD_NEW_FRIEND_SUCCESS="13";//新增好友成功
 }

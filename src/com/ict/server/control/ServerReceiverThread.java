@@ -2,6 +2,8 @@ package com.ict.server.control;
 
 import com.ict.db.common.MessageType;
 import com.ict.db.domain.Message;
+import com.ict.db.domain.UserRelation;
+import com.ict.db.util.DbUtils;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -30,6 +32,28 @@ public class ServerReceiverThread extends Thread {
                 ObjectInputStream inputStream = new ObjectInputStream(s.getInputStream());
                 //接受message对象
                 Message message = (Message) inputStream.readObject();
+                if (MessageType.ADD_NEW_FRIEND.equals(message.getMessageType())){
+                    String sender = message.getSender();
+                    String newFriend=message.getContent();
+                    //首先查询新好友在 user 表中是否存在
+                    if (!(DbUtils.seekUser(newFriend))){//新好友在 user 表中存在
+                        //在 userrelation 表中查询新好友是不是已经是好友了
+                        if (DbUtils.seekFriendIsExit(sender, newFriend, 1)){
+                            //已经是好友了
+                            message.setMessageType(MessageType.ADD_NEW_FRIEND_FAILURE_ALREADY_FRIEND);
+                        }else {
+                            //添加好友记录
+                            DbUtils.insertUserRelation(new UserRelation(sender,newFriend,1));
+                            String allFriend = DbUtils.seekAllFriends(sender, 1);
+                            message.setContent(allFriend);//全部好友保存在 content 字段
+                            message.setMessageType(MessageType.ADD_NEW_FRIEND_SUCCESS);//设置添加新好友成功消息类型
+                        }
+                    }else {//新好友在 user 表中不存在
+                        message.setMessageType(MessageType.ADD_NEW_FRIEND_FAILURE_NO_USER);//设置添加新好友失败消息类型
+                    }
+                    Socket socket = ChatServer.hmSocket.get(sender);
+                    sendMessage(socket, message);//发送消息到客户端
+                }
                 if (MessageType.COMMON_CHAT_MESSAGE.equals(message.getMessageType())) {
                     System.out.println(message.getSender() + " 对 " + message.getReceiver()
                             + " 说：" + message.getContent());

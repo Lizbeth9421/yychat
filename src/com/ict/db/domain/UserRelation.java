@@ -22,4 +22,10 @@ public class UserRelation implements Serializable {
     private Integer relation;
 
     private static final long serialVersionUID = 1L;
+
+    public UserRelation(final String masterUser, final String slaveUser, final Integer relation) {
+        this.masterUser = masterUser;
+        this.slaveUser = slaveUser;
+        this.relation = relation;
+    }
 }

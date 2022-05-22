@@ -7,6 +7,7 @@ import com.ict.view.ClientLogin;
 import com.ict.view.FriendChat;
 import com.ict.view.FriendList;
 
+import javax.swing.*;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.Socket;
@@ -15,6 +16,7 @@ import java.net.Socket;
  * @Author: Lizbeth9421
  * @Date: 2022/04/18/11:35
  */
+@SuppressWarnings("all")
 public class ClientReceiverThread extends Thread {
     Socket s;
 
@@ -29,10 +31,22 @@ public class ClientReceiverThread extends Thread {
                 ObjectInputStream inputStream = new ObjectInputStream(s.getInputStream());
                 //阻塞式编程，没有读到信息（服务器没有发送），就一直等待
                 Message message = (Message) inputStream.readObject();
+                if ((MessageType.ADD_NEW_FRIEND_FAILURE_NO_USER.equals(message.getMessageType()))) {
+                    JOptionPane.showMessageDialog(null, "新好友名字不存在，添加好友失败！");
+                }
+                if (MessageType.ADD_NEW_FRIEND_FAILURE_ALREADY_FRIEND.equals(message.getMessageType())) {
+                    JOptionPane.showMessageDialog(null, "该用户已经是好友了，不能重复添加！");
+                }
+                if (MessageType.ADD_NEW_FRIEND_SUCCESS.equals(message.getMessageType())){
+                    JOptionPane.showMessageDialog(null, "添加好友成功！");
+                    String sender=message.getSender();
+                    FriendList friendList = ClientLogin.hmFriendList.get(sender);
+                    friendList.showAllFriends(message.getContent());
+                }
                 if (MessageType.COMMON_CHAT_MESSAGE.equals(message.getMessageType())) {
                     String receiver = message.getReceiver();
                     String sender = message.getSender();
-                    //从 HashMap 中拿到 FriendChat 对象，并显示聊天信息 TOdo
+                    //从 HashMap 中拿到 FriendChat 对象，并显示聊天信息
                     FriendChat fc = FriendList.friendChatHashMap.get(receiver + "to" + sender);
                     if (ObjectUtil.isNotNull(fc)) {
                         fc.append(message);
@@ -45,10 +59,10 @@ public class ClientReceiverThread extends Thread {
                     FriendList friendList = ClientLogin.hmFriendList.get(message.getReceiver());
                     friendList.activeOnlineFriendIcon(message);
                 }
-                if (message.getMessageType().equals(MessageType.NEW_ONLINE_FRIEND)) {
-                    String receiver=message.getReceiver();//先拿到 receiver 的好友列表界面
-                    FriendList fl=ClientLogin.hmFriendList.get(receiver);
-                    String sender=message.getSender();
+                if (MessageType.NEW_ONLINE_FRIEND.equals(message.getMessageType())) {
+                    String receiver = message.getReceiver();//先拿到 receiver 的好友列表界面
+                    FriendList fl = ClientLogin.hmFriendList.get(receiver);
+                    String sender = message.getSender();
                     fl.activeNewOnlineFriendIcon(sender);//激活新上线好友图标
                 }
             }
