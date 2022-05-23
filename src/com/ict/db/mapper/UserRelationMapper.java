@@ -1,8 +1,8 @@
 package com.ict.db.mapper;
 
 import com.ict.db.domain.UserRelation;
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
 
@@ -10,6 +10,7 @@ import java.util.List;
  * @Author: Lizbeth9421
  * @Date: 2022/05/19/13:48
  */
+@Mapper
 public interface UserRelationMapper {
     int deleteByPrimaryKey(Integer id);
 

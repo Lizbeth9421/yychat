@@ -53,7 +53,8 @@ public class FriendChat extends JFrame implements ActionListener {
     }
 
     public void append(Message message) {
-        textArea.append(message.getSender() + "对你说： " + message.getContent() + "\r\n");
+        textArea.append(message.getSendTime().toString() + "\r\n" + message.getSender() + "对你说： " + message.getContent() +
+                "\r\n");
     }
 
 

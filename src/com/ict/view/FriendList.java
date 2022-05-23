@@ -3,13 +3,11 @@ package com.ict.view;
 import com.ict.db.common.MessageType;
 import com.ict.db.domain.Message;
 import com.ict.server.control.ClientConnection;
+import lombok.SneakyThrows;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import java.awt.event.*;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.util.HashMap;
@@ -21,7 +19,7 @@ import java.util.HashMap;
  * @Date: 2022/04/02/11:08
  */
 @SuppressWarnings("all")
-public class FriendList extends JFrame implements ActionListener, MouseListener {
+public class FriendList extends JFrame implements ActionListener, MouseListener, WindowListener {
     //定义 HashMap 对象，用来保存 name+toname 和好友聊天界面
     public static HashMap<String, FriendChat> friendChatHashMap = new HashMap<>();
 
@@ -125,7 +123,8 @@ public class FriendList extends JFrame implements ActionListener, MouseListener 
 
         this.setIconImage(new ImageIcon("resources/duck2.gif").getImage());
         this.setTitle(name + "好友列表");
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        //this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.addWindowListener(this);//在窗体上注册监听器对象（事件处理器对象是自己）
         this.setBounds(800, 600, 350, 250);
         this.setVisible(true);
     }
@@ -144,11 +143,6 @@ public class FriendList extends JFrame implements ActionListener, MouseListener 
         }
         //让好友列表面板中的组件重新生效
         friendListPanel.revalidate();
-    }
-
-
-    public static void main(String[] args) {
-        //new FriendList("");
     }
 
     public void activeNewOnlineFriendIcon(String newOnlineFriend) {
@@ -222,5 +216,52 @@ public class FriendList extends JFrame implements ActionListener, MouseListener 
     public void mouseExited(final MouseEvent e) {//鼠标离开好友标签组件时
         final JLabel source = (JLabel) e.getSource();
         source.setForeground(Color.blue);//好友名字为蓝色
+    }
+
+    @Override
+    public void windowOpened(final WindowEvent e) {
+
+    }
+
+    @Override
+    public void windowClosing(final WindowEvent e) {
+        System.out.println(name+" 准备关闭客户端...");
+        //向服务器发送关闭客户端消息
+        Message message = new Message();
+        message.setSender(name);
+        message.setReceiver("Server");
+        message.setMessageType(MessageType.USER_EXIT_SERVER_THREAD_CLOSE);
+        try {
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(ClientConnection.s.getOutputStream());
+            objectOutputStream.writeObject(message);//向服务器发送消息 } catch (IOException e) {
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        System.exit(0);
+    }
+
+    @Override
+    public void windowClosed(final WindowEvent e) {
+
+    }
+
+    @Override
+    public void windowIconified(final WindowEvent e) {
+
+    }
+
+    @Override
+    public void windowDeiconified(final WindowEvent e) {
+
+    }
+
+    @Override
+    public void windowActivated(final WindowEvent e) {
+
+    }
+
+    @Override
+    public void windowDeactivated(final WindowEvent e) {
+
     }
 }

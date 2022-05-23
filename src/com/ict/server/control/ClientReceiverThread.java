@@ -31,6 +31,11 @@ public class ClientReceiverThread extends Thread {
                 ObjectInputStream inputStream = new ObjectInputStream(s.getInputStream());
                 //阻塞式编程，没有读到信息（服务器没有发送），就一直等待
                 Message message = (Message) inputStream.readObject();
+                if (MessageType.USER_EXIT_CLIENT_THREAD_CLOSE.equals(message.getMessageType())){
+                    System.out.println("关闭 "+message.getSender()+" 用户接收线程");
+                    s.close();
+                    break;//退出线程的循环结构
+                }
                 if ((MessageType.ADD_NEW_FRIEND_FAILURE_NO_USER.equals(message.getMessageType()))) {
                     JOptionPane.showMessageDialog(null, "新好友名字不存在，添加好友失败！");
                 }

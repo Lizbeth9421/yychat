@@ -32,5 +32,6 @@
     <mappers>
         <mapper resource="com/ict/db/mapperxml/UserMapper.xml"/>
         <mapper resource="com/ict/db/mapperxml/UserRelationMapper.xml"/>
+        <mapper resource="com/ict/db/mapperxml/MessageMapper.xml"/>
     </mappers>
 </configuration>

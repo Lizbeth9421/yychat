@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -32,23 +33,31 @@ public class ServerReceiverThread extends Thread {
                 ObjectInputStream inputStream = new ObjectInputStream(s.getInputStream());
                 //接受message对象
                 Message message = (Message) inputStream.readObject();
-                if (MessageType.ADD_NEW_FRIEND.equals(message.getMessageType())){
+                if (MessageType.USER_EXIT_SERVER_THREAD_CLOSE.equals(message.getMessageType())){
                     String sender = message.getSender();
-                    String newFriend=message.getContent();
+                    message.setMessageType(MessageType.USER_EXIT_CLIENT_THREAD_CLOSE);
+                    sendMessage(s, message);//发消息到客户端，关闭客户端接收线程
+                    System.out.println(sender+" 用户退出了!正在关闭其服务线程");
+                    s.close();
+                    break;//退出线程的循环结构
+                }
+                if (MessageType.ADD_NEW_FRIEND.equals(message.getMessageType())) {
+                    String sender = message.getSender();
+                    String newFriend = message.getContent();
                     //首先查询新好友在 user 表中是否存在
-                    if (!(DbUtils.seekUser(newFriend))){//新好友在 user 表中存在
+                    if (!(DbUtils.seekUser(newFriend))) {//新好友在 user 表中存在
                         //在 userrelation 表中查询新好友是不是已经是好友了
-                        if (DbUtils.seekFriendIsExit(sender, newFriend, 1)){
+                        if (DbUtils.seekFriendIsExit(sender, newFriend, 1)) {
                             //已经是好友了
                             message.setMessageType(MessageType.ADD_NEW_FRIEND_FAILURE_ALREADY_FRIEND);
-                        }else {
+                        } else {
                             //添加好友记录
-                            DbUtils.insertUserRelation(new UserRelation(sender,newFriend,1));
+                            DbUtils.insertUserRelation(new UserRelation(sender, newFriend, 1));
                             String allFriend = DbUtils.seekAllFriends(sender, 1);
                             message.setContent(allFriend);//全部好友保存在 content 字段
                             message.setMessageType(MessageType.ADD_NEW_FRIEND_SUCCESS);//设置添加新好友成功消息类型
                         }
-                    }else {//新好友在 user 表中不存在
+                    } else {//新好友在 user 表中不存在
                         message.setMessageType(MessageType.ADD_NEW_FRIEND_FAILURE_NO_USER);//设置添加新好友失败消息类型
                     }
                     Socket socket = ChatServer.hmSocket.get(sender);
@@ -57,6 +66,9 @@ public class ServerReceiverThread extends Thread {
                 if (MessageType.COMMON_CHAT_MESSAGE.equals(message.getMessageType())) {
                     System.out.println(message.getSender() + " 对 " + message.getReceiver()
                             + " 说：" + message.getContent());
+                    message.setSendTime(new Date());
+                    //把聊天信息添加到数据库中
+                    DbUtils.insertMessage(message);
                     //从 hmSocket 中拿到接收方的 Socket 对象，然后转发聊天信息
                     String receiver = message.getReceiver();
                     Socket receiverSocket = ChatServer.hmSocket.get(receiver);
@@ -68,7 +80,7 @@ public class ServerReceiverThread extends Thread {
                         System.out.println(receiver + "不在线上");
                     }
                 }
-                if (message.getMessageType().equals(MessageType.REQUEST_ONLINE_FRIEND)) {
+                if (MessageType.REQUEST_ONLINE_FRIEND.equals(message.getMessageType())) {
                     Set<String> onlineFriendSet = ChatServer.hmSocket.keySet();
                     Iterator<String> iterator = onlineFriendSet.iterator();
                     String onlineFriend = "";
@@ -81,11 +93,11 @@ public class ServerReceiverThread extends Thread {
                     message.setContent(onlineFriend);//设置消息内容是在线好友的名字
                     sendMessage(s, message);//发送在线好友的响应消息
                 }
-                if (message.getMessageType().equals(MessageType.NEW_ONLINE_TO_ALL_FRIEND)){
+                if (MessageType.NEW_ONLINE_TO_ALL_FRIEND.equals(message.getMessageType())) {
                     message.setMessageType(MessageType.NEW_ONLINE_FRIEND);//设置消息类型
-                    Set<String> onlineFriendSet=ChatServer.hmSocket.keySet();//拿到在线好友名字的集合
-                    Iterator<String> it=onlineFriendSet.iterator();
-                    while(it.hasNext()){//循环中依次给全部在线好友发送消息
+                    Set<String> onlineFriendSet = ChatServer.hmSocket.keySet();//拿到在线好友名字的集合
+                    Iterator<String> it = onlineFriendSet.iterator();
+                    while (it.hasNext()) {//循环中依次给全部在线好友发送消息
                         String receiver = it.next();
                         message.setReceiver(receiver);//接收方为每个在线好友
                         //拿到接收消息用户的 Socket 对象

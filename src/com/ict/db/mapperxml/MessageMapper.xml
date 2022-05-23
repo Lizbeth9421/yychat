@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ict.db.mapper.MessageMapper">
+    <resultMap id="BaseResultMap" type="com.ict.db.domain.Message">
+        <!--@mbg.generated-->
+        <!--@Table message-->
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="sender" jdbcType="VARCHAR" property="sender"/>
+        <result column="receiver" jdbcType="VARCHAR" property="receiver"/>
+        <result column="content" jdbcType="VARCHAR" property="content"/>
+        <result column="sendTime" jdbcType="TIMESTAMP" property="sendTime"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        <!--@mbg.generated-->
+        id, sender, receiver, content, sendTime
+    </sql>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        <!--@mbg.generated-->
+        select
+        <include refid="Base_Column_List"/>
+        from message
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        <!--@mbg.generated-->
+        delete
+        from message
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+    <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.ict.db.domain.Message"
+            useGeneratedKeys="true">
+        <!--@mbg.generated-->
+        insert into message (sender, receiver, content,
+                             sendTime)
+        values (#{sender,jdbcType=VARCHAR}, #{receiver,jdbcType=VARCHAR}, #{content,jdbcType=VARCHAR},
+                #{sendTime,jdbcType=TIMESTAMP})
+    </insert>
+    <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.ict.db.domain.Message"
+            useGeneratedKeys="true">
+        <!--@mbg.generated-->
+        insert into message
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="sender != null and sender != ''">
+                sender,
+            </if>
+            <if test="receiver != null and receiver != ''">
+                receiver,
+            </if>
+            <if test="content != null and content != ''">
+                content,
+            </if>
+            <if test="sendTime != null">
+                sendTime,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="sender != null and sender != ''">
+                #{sender,jdbcType=VARCHAR},
+            </if>
+            <if test="receiver != null and receiver != ''">
+                #{receiver,jdbcType=VARCHAR},
+            </if>
+            <if test="content != null and content != ''">
+                #{content,jdbcType=VARCHAR},
+            </if>
+            <if test="sendTime != null">
+                #{sendTime,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.ict.db.domain.Message">
+        <!--@mbg.generated-->
+        update message
+        <set>
+            <if test="sender != null and sender != ''">
+                sender = #{sender,jdbcType=VARCHAR},
+            </if>
+            <if test="receiver != null and receiver != ''">
+                receiver = #{receiver,jdbcType=VARCHAR},
+            </if>
+            <if test="content != null and content != ''">
+                content = #{content,jdbcType=VARCHAR},
+            </if>
+            <if test="sendTime != null">
+                sendTime = #{sendTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.ict.db.domain.Message">
+        <!--@mbg.generated-->
+        update message
+        set sender   = #{sender,jdbcType=VARCHAR},
+            receiver = #{receiver,jdbcType=VARCHAR},
+            content  = #{content,jdbcType=VARCHAR},
+            sendTime = #{sendTime,jdbcType=TIMESTAMP}
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+</mapper>

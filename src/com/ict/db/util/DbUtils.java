@@ -1,8 +1,10 @@
 package com.ict.db.util;
 
 import cn.hutool.core.util.ObjectUtil;
+import com.ict.db.domain.Message;
 import com.ict.db.domain.User;
 import com.ict.db.domain.UserRelation;
+import com.ict.db.mapper.MessageMapper;
 import com.ict.db.mapper.UserMapper;
 import com.ict.db.mapper.UserRelationMapper;
 import org.apache.ibatis.session.SqlSession;
@@ -12,6 +14,20 @@ import org.apache.ibatis.session.SqlSession;
  * @Date: 2022/05/16/10:45
  */
 public class DbUtils {
+
+
+    /**
+     * 插入聊天信息
+     *
+     * @param message
+     */
+    public static void insertMessage(Message message) {
+        SqlSession sqlSession = MyBatisUtil.getSqlSession();
+        MessageMapper messageMapper = sqlSession.getMapper(MessageMapper.class);
+        messageMapper.insertSelective(message);
+        sqlSession.commit();
+        sqlSession.close();
+    }
 
     /**
      * 插入好友关系
