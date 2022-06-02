@@ -23,11 +23,11 @@ import java.util.HashMap;
 public class ClientLogin extends JFrame implements ActionListener {
     //定义标签组件
     JLabel head;
-    JButton loginButton, registerButton, cancelButton;
+    JButton loginButton, registerButton, cancelButton,lostPassword;
     JPanel jPanel;
 
     //定义登陆界面中间部分的组件
-    JLabel username, password, lostPassword, passwordProtect;
+    JLabel username, password, passwordProtect;
     JTextField textField;
     JPasswordField passwordField;
     JButton clearNumberButton;
@@ -64,7 +64,7 @@ public class ClientLogin extends JFrame implements ActionListener {
         //-----创建登录界面中间部分的组件---
         username = new JLabel("YY号码", JLabel.CENTER);
         password = new JLabel("YY密码", JLabel.CENTER);
-        lostPassword = new JLabel("忘记密码", JLabel.CENTER);
+        lostPassword = new JButton("忘记密码");
         //设置忘记密码按钮字体为蓝色
         lostPassword.setForeground(Color.CYAN);
         passwordProtect = new JLabel("申请密码保护", JLabel.CENTER);
@@ -78,6 +78,7 @@ public class ClientLogin extends JFrame implements ActionListener {
         YYNumberPanel.add(username);
         YYNumberPanel.add(textField);
         YYNumberPanel.add(clearNumberButton);
+        clearNumberButton.addActionListener(this);
         YYNumberPanel.add(password);
         YYNumberPanel.add(passwordField);
         YYNumberPanel.add(lostPassword);
@@ -123,23 +124,6 @@ public class ClientLogin extends JFrame implements ActionListener {
             } else {
                 JOptionPane.showMessageDialog(this, "密码错误，请重新登陆！");
             }
-            /*
-                //创建ClientConnection对象，和服务器建立联系
-                if (new ClientConnection().loginValidate(user)) {
-                    hmFriendList.put(name, new FriendList(name));
-                    Message mess = new Message();
-                    mess.setSender(name);
-                    mess.setReceiver("Server");
-                    mess.setMessageType(MessageType.REQUEST_ONLINE_FRIEND);//设置消息类型
-                    //使用 sendMessage()方法发送消息
-                    sendMessage(ClientConnection.s, mess);
-                    mess.setMessageType(MessageType.NEW_ONLINE_TO_ALL_FRIEND);
-                    sendMessage(ClientConnection.s, mess);
-                    this.dispose();//关闭登陆界面
-                } else {
-                    JOptionPane.showMessageDialog(this, "密码错误，请重新登录！");
-                }
-            */
         } else if (e.getSource() == registerButton) {
             //设置 user 对象类型
             user.setUserType(UserType.USER_REGISTER);
@@ -148,6 +132,9 @@ public class ClientLogin extends JFrame implements ActionListener {
             } else {
                 JOptionPane.showMessageDialog(this, name + " 用户名重复，请重新注册！");
             }
+        }else if(e.getSource() == clearNumberButton){
+            //清除号码功能
+            textField.setText("");
         }
     }
 

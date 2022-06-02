@@ -25,6 +25,10 @@ public class StartServer extends JFrame implements ActionListener {
         this.setLayout(new GridLayout(1, 2));
         //为启动按钮添加监听器
         startServerButton.addActionListener(this);
+        startServerButton.setEnabled(true);
+        //为关闭按钮添加监听器
+        stopServerButton.addActionListener(this);
+        stopServerButton.setEnabled(true);
         this.add(startServerButton);
         this.add(stopServerButton);
         this.setSize(400, 100);
@@ -41,6 +45,9 @@ public class StartServer extends JFrame implements ActionListener {
         if(e.getSource() == startServerButton) {
             //创建chatServer服务器对象
             new ChatServer();
+        }
+        if (e.getSource()==stopServerButton){
+            System.exit(0);
         }
     }
 
