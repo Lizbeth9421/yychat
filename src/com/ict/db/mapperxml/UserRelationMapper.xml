@@ -99,4 +99,12 @@
           and slaveUser = #{newFriend,jdbcType=VARCHAR}
           and relation = #{friendType,jdbcType=INTEGER}
     </select>
+
+    <delete id="deleteUserRelationByUser">
+        delete
+        from userrelation
+        where masterUser = #{sender,jdbcType=VARCHAR}
+          and slaveUser = #{deleteFriend,jdbcType=VARCHAR}
+          and relation = #{friendType,jdbcType=INTEGER}
+    </delete>
 </mapper>

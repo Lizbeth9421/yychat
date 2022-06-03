@@ -31,8 +31,8 @@ public class ClientReceiverThread extends Thread {
                 ObjectInputStream inputStream = new ObjectInputStream(s.getInputStream());
                 //阻塞式编程，没有读到信息（服务器没有发送），就一直等待
                 Message message = (Message) inputStream.readObject();
-                if (MessageType.USER_EXIT_CLIENT_THREAD_CLOSE.equals(message.getMessageType())){
-                    System.out.println("关闭 "+message.getSender()+" 用户接收线程");
+                if (MessageType.USER_EXIT_CLIENT_THREAD_CLOSE.equals(message.getMessageType())) {
+                    System.out.println("关闭 " + message.getSender() + " 用户接收线程");
                     s.close();
                     break;//退出线程的循环结构
                 }
@@ -42,9 +42,9 @@ public class ClientReceiverThread extends Thread {
                 if (MessageType.ADD_NEW_FRIEND_FAILURE_ALREADY_FRIEND.equals(message.getMessageType())) {
                     JOptionPane.showMessageDialog(null, "该用户已经是好友了，不能重复添加！");
                 }
-                if (MessageType.ADD_NEW_FRIEND_SUCCESS.equals(message.getMessageType())){
+                if (MessageType.ADD_NEW_FRIEND_SUCCESS.equals(message.getMessageType())) {
                     JOptionPane.showMessageDialog(null, "添加好友成功！");
-                    String sender=message.getSender();
+                    String sender = message.getSender();
                     FriendList friendList = ClientLogin.hmFriendList.get(sender);
                     friendList.showAllFriends(message.getContent());
                 }
@@ -69,6 +69,18 @@ public class ClientReceiverThread extends Thread {
                     FriendList fl = ClientLogin.hmFriendList.get(receiver);
                     String sender = message.getSender();
                     fl.activeNewOnlineFriendIcon(sender);//激活新上线好友图标
+                }
+                if (MessageType.DELETE_USER_SUCCESS.equals(message.getMessageType())) {
+                    JOptionPane.showMessageDialog(null, "删除好友成功！");
+                    String sender = message.getSender();
+                    FriendList friendList = ClientLogin.hmFriendList.get(sender);
+                    friendList.showAllFriends(message.getContent());
+                }
+                if (MessageType.DELETE_USER_FAILED.equals(message.getMessageType())) {
+                    JOptionPane.showMessageDialog(null, "删除的好友不存在！");
+                }
+                if (MessageType.NOT_FRIEND.equals(message.getMessageType())) {
+                    JOptionPane.showMessageDialog(null, "所删除好友不是你的好友！");
                 }
             }
         } catch (IOException | ClassNotFoundException e) {

@@ -7,6 +7,7 @@ import com.ict.db.domain.UserRelation;
 import com.ict.db.mapper.MessageMapper;
 import com.ict.db.mapper.UserMapper;
 import com.ict.db.mapper.UserRelationMapper;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.session.SqlSession;
 
 /**
@@ -42,6 +43,21 @@ public class DbUtils {
         sqlSession.close();
     }
 
+
+    /**
+     * 删除好友关系
+     *
+     * @param sender
+     * @param deleteFriend
+     * @param friendType
+     */
+    public static void deleteUserRelation(String sender, String deleteFriend, Integer friendType) {
+        SqlSession sqlSession = MyBatisUtil.getSqlSession();
+        UserRelationMapper userRelationMapper = sqlSession.getMapper(UserRelationMapper.class);
+        userRelationMapper.deleteUserRelationByUser(sender, deleteFriend, friendType);
+        sqlSession.commit();
+        sqlSession.close();
+    }
 
     /**
      * 查询新好友是不是已经是好友了
@@ -91,6 +107,20 @@ public class DbUtils {
         User user = userMapper.seekUser(username);
         sqlSession.close();
         return ObjectUtil.isNull(user);
+    }
+
+    /**
+     * 根据用户名查询用户
+     *
+     * @param username 用户名
+     * @return
+     */
+    public static User selectUserByName(String username) {
+        SqlSession sqlSession = MyBatisUtil.getSqlSession();
+        UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
+        User user = userMapper.seekUser(username);
+        sqlSession.close();
+        return user;
     }
 
     /**

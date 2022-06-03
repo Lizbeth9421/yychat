@@ -1,10 +1,14 @@
 package com.ict.view;
 
+import cn.hutool.core.util.ObjectUtil;
 import com.ict.db.common.MessageType;
 import com.ict.db.common.UserType;
 import com.ict.db.domain.Message;
 import com.ict.db.domain.User;
+import com.ict.db.util.DbUtils;
+import com.ict.db.util.EmailUtils;
 import com.ict.server.control.ClientConnection;
+import lombok.SneakyThrows;
 
 import javax.swing.*;
 import java.awt.*;
@@ -23,7 +27,7 @@ import java.util.HashMap;
 public class ClientLogin extends JFrame implements ActionListener {
     //定义标签组件
     JLabel head;
-    JButton loginButton, registerButton, cancelButton,lostPassword;
+    JButton loginButton, registerButton, cancelButton, lostPassword;
     JPanel jPanel;
 
     //定义登陆界面中间部分的组件
@@ -65,6 +69,7 @@ public class ClientLogin extends JFrame implements ActionListener {
         username = new JLabel("YY号码", JLabel.CENTER);
         password = new JLabel("YY密码", JLabel.CENTER);
         lostPassword = new JButton("忘记密码");
+        lostPassword.addActionListener(this);
         //设置忘记密码按钮字体为蓝色
         lostPassword.setForeground(Color.CYAN);
         passwordProtect = new JLabel("申请密码保护", JLabel.CENTER);
@@ -107,6 +112,7 @@ public class ClientLogin extends JFrame implements ActionListener {
         this.setVisible(true);
     }
 
+    @SneakyThrows
     @Override
     public void actionPerformed(final ActionEvent e) {
         String name = textField.getText();
@@ -132,9 +138,19 @@ public class ClientLogin extends JFrame implements ActionListener {
             } else {
                 JOptionPane.showMessageDialog(this, name + " 用户名重复，请重新注册！");
             }
-        }else if(e.getSource() == clearNumberButton){
+        } else if (e.getSource() == clearNumberButton) {
             //清除号码功能
             textField.setText("");
+        } else if (e.getSource() == lostPassword) {
+            //发邮件
+            User user1 = DbUtils.selectUserByName(name);
+            if (ObjectUtil.isNotNull(user1)) {
+                System.out.println(user1.toString());
+                EmailUtils.sendEmail(user1.getEmail(), String.valueOf(user1.getPassword()));
+                JOptionPane.showMessageDialog(this, "邮件已发送!");
+            } else {
+                JOptionPane.showMessageDialog(this, "请输入正确的用户名!");
+            }
         }
     }
 

@@ -4,34 +4,35 @@
     <resultMap id="BaseResultMap" type="com.ict.db.domain.User">
         <!--@mbg.generated-->
         <!--@Table `user`-->
-        <id column="id" jdbcType="INTEGER" property="id"/>
-        <result column="username" jdbcType="VARCHAR" property="username"/>
-        <result column="password" jdbcType="VARCHAR" property="password"/>
+        <id column="id" jdbcType="INTEGER" property="id" />
+        <result column="username" jdbcType="VARCHAR" property="username" />
+        <result column="password" jdbcType="VARCHAR" property="password" />
+        <result column="email" jdbcType="VARCHAR" property="email" />
     </resultMap>
     <sql id="Base_Column_List">
         <!--@mbg.generated-->
-        id, username, `password`
+        id, username, `password`, email
     </sql>
     <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
         <!--@mbg.generated-->
         select
-        <include refid="Base_Column_List"/>
+        <include refid="Base_Column_List" />
         from `user`
         where id = #{id,jdbcType=INTEGER}
     </select>
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
         <!--@mbg.generated-->
-        delete
-        from `user`
+        delete from `user`
         where id = #{id,jdbcType=INTEGER}
     </delete>
     <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.ict.db.domain.User" useGeneratedKeys="true">
         <!--@mbg.generated-->
-        insert into `user` (username, `password`)
-        values (#{username,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR})
+        insert into `user` (username, `password`, email
+        )
+        values (#{username,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR}
+        )
     </insert>
-    <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.ict.db.domain.User"
-            useGeneratedKeys="true">
+    <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.ict.db.domain.User" useGeneratedKeys="true">
         <!--@mbg.generated-->
         insert into `user`
         <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -41,6 +42,9 @@
             <if test="password != null and password != ''">
                 `password`,
             </if>
+            <if test="email != null and email != ''">
+                email,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="username != null and username != ''">
@@ -48,6 +52,9 @@
             </if>
             <if test="password != null and password != ''">
                 #{password,jdbcType=VARCHAR},
+            </if>
+            <if test="email != null and email != ''">
+                #{email,jdbcType=VARCHAR},
             </if>
         </trim>
     </insert>
@@ -61,14 +68,18 @@
             <if test="password != null and password != ''">
                 `password` = #{password,jdbcType=VARCHAR},
             </if>
+            <if test="email != null and email != ''">
+                email = #{email,jdbcType=VARCHAR},
+            </if>
         </set>
         where id = #{id,jdbcType=INTEGER}
     </update>
     <update id="updateByPrimaryKey" parameterType="com.ict.db.domain.User">
         <!--@mbg.generated-->
         update `user`
-        set username   = #{username,jdbcType=VARCHAR},
-            `password` = #{password,jdbcType=VARCHAR}
+        set username = #{username,jdbcType=VARCHAR},
+        `password` = #{password,jdbcType=VARCHAR},
+        email = #{email,jdbcType=VARCHAR}
         where id = #{id,jdbcType=INTEGER}
     </update>
 

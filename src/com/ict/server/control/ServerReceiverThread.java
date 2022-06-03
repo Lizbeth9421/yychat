@@ -105,6 +105,25 @@ public class ServerReceiverThread extends Thread {
                         sendMessage(socket, message);///告诉 receiver 用户，sender 上线了，激活 sender 图标
                     }
                 }
+                if (MessageType.DELETE_USER.equals(message.getMessageType())){
+                    String sender = message.getSender();
+                    String deleteFriend = message.getContent();
+                    if (!(DbUtils.seekUser(deleteFriend))) {//新好友在 user 表中存在
+                        if (DbUtils.seekFriendIsExit(sender, deleteFriend, 1)) {
+                            DbUtils.deleteUserRelation(sender, deleteFriend, 1);
+                            String allFriend = DbUtils.seekAllFriends(sender, 1);
+                            message.setContent(allFriend);//全部好友保存在 content 字段
+                            message.setMessageType(MessageType.DELETE_USER_SUCCESS);
+                        }else {
+                            message.setMessageType(MessageType.NOT_FRIEND);//不是好友
+                        }
+                    }else {
+                        //删除失败
+                        message.setMessageType(MessageType.DELETE_USER_FAILED);
+                    }
+                    Socket socket = ChatServer.hmSocket.get(sender);
+                    sendMessage(socket, message);//发送消息到客户端
+                }
             } catch (ClassNotFoundException | IOException e) {
                 e.printStackTrace();
             }

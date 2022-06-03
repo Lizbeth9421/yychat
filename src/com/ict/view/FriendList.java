@@ -47,37 +47,31 @@ public class FriendList extends JFrame implements ActionListener, MouseListener,
 
     //定义添加好友面板和按钮
     JPanel addFriendJPanel;
-    JButton addFriendButton;
+    JButton addFriendButton, deleteFriendButton;
+
+
+    JPanel functionJPanel;
 
     public FriendList(String name, String allFriends) {
         this.name = name;
+        functionJPanel = new JPanel(new GridLayout(2, 1));
+
         //创建好友面板中的组件
         friendPanel = new JPanel(new BorderLayout());//卡片 1 设置边界布局模式
 
         addFriendJPanel = new JPanel(new GridLayout(2, 1));//添加好友面板设置为网格布局
         addFriendButton = new JButton("添加好友");
         addFriendButton.addActionListener(this);//在添加好友按钮上注册监听器对象
+        deleteFriendButton = new JButton("删除好友");
+        deleteFriendButton.addActionListener(this);
         myFriendButton1 = new JButton("我的好友");
-        //friendPanel.add(myFriendButton1, "North");
-        friendPanel.add(addFriendButton, "North");
+        //friendPanel.add(addFriendButton, "North");
+        functionJPanel.add(addFriendButton);
+        functionJPanel.add(deleteFriendButton);
+        friendPanel.add(functionJPanel, "North");
+        //friendPanel.add(deleteFriendButton,"North");
         friendListPanel = new JPanel();
         showAllFriends(allFriends);
-        /*
-            //创建中间的好友列表滚动条面板
-            String[] myFriend = allFriends.split(" ");
-            friendListPanel=new JPanel(new GridLayout(myFriend.length-1,1));
-            for (int i = 1; i <myFriend.length; i++) {
-                String imageUrl = "resources/" + i % 6 + ".jpg";//好友图标使用固定的图片
-                ImageIcon imageIcon = new ImageIcon(imageUrl);
-                friendLabel[i] = new JLabel(myFriend[i] + "", imageIcon, JLabel.LEFT);
-                //if (i != Integer.valueOf(name)) {
-                //friendLabel[i].setEnabled(false);//好友图标设置为非激活的状态
-                //}
-                friendListPanel.add(friendLabel[i]);//好友图标添加到好友列表
-                //为每一个好友标签组件上添加鼠标监听器
-                //friendLabel[i].addMouseListener(this);
-            }
-        */
         friendListScrollPane = new JScrollPane(friendListPanel);//创建好友滚动条面板
         friendPanel.add(friendListScrollPane, "Center");
 
@@ -183,6 +177,24 @@ public class FriendList extends JFrame implements ActionListener, MouseListener,
                 }
             }
         }
+
+        if (e.getSource() == deleteFriendButton) {
+            String deleteFriend = JOptionPane.showInputDialog("请输入要删除好友的名字:");
+            System.out.println("deleteFriend" + deleteFriend);
+            if (deleteFriend != null) {
+                Message message = new Message();
+                message.setSender(name);
+                message.setReceiver("server");
+                message.setContent(deleteFriend);
+                message.setMessageType(MessageType.DELETE_USER);
+                try {
+                    ObjectOutputStream objectOutputStream = new ObjectOutputStream(ClientConnection.s.getOutputStream());
+                    objectOutputStream.writeObject(message);
+                } catch (IOException exception) {
+                    exception.printStackTrace();
+                }
+            }
+        }
     }
 
     @Override
@@ -225,7 +237,7 @@ public class FriendList extends JFrame implements ActionListener, MouseListener,
 
     @Override
     public void windowClosing(final WindowEvent e) {
-        System.out.println(name+" 准备关闭客户端...");
+        System.out.println(name + " 准备关闭客户端...");
         //向服务器发送关闭客户端消息
         Message message = new Message();
         message.setSender(name);

@@ -37,4 +37,14 @@ public interface UserRelationMapper {
      */
     UserRelation seekFriendIsExit(@Param("sender") String sender, @Param("newFriend") String newFriend, @Param(
             "friendType") Integer friendType);
+
+
+    /**
+     * 删除
+     * @param sender
+     * @param deleteFriend
+     * @param friendType
+     */
+    void deleteUserRelationByUser(@Param("sender") String sender, @Param("deleteFriend") String deleteFriend, @Param(
+            "friendType") Integer friendType);
 }

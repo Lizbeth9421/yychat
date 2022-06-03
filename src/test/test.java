@@ -1,10 +1,9 @@
 package test;
 
-import com.ict.db.mapper.UserMapper;
-import com.ict.db.util.DbUtils;
-import com.ict.db.util.MyBatisUtil;
-import org.apache.ibatis.session.SqlSession;
+import com.ict.db.util.EmailUtils;
 import org.junit.jupiter.api.Test;
+
+import javax.mail.MessagingException;
 
 /**
  * @Author: Lizbeth9421
@@ -13,9 +12,8 @@ import org.junit.jupiter.api.Test;
 public class test {
 
     @Test
-    public void test(){
-        String friends = DbUtils.seekAllFriends("mai", 1);
-        System.out.println(friends);
+    public void test() throws MessagingException {
+        EmailUtils.sendEmail("3512348186@qq.com", "1111");
     }
 }
 

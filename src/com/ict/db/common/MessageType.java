@@ -35,4 +35,12 @@ public interface MessageType {
     String USER_EXIT_SERVER_THREAD_CLOSE = "14";
 
     String USER_EXIT_CLIENT_THREAD_CLOSE = "15";
+
+    String DELETE_USER = "16";//删除好友
+
+    String DELETE_USER_SUCCESS = "17";//删除好友成功
+
+    String DELETE_USER_FAILED = "18";//删除好友失败
+
+    String NOT_FRIEND = "19";//不是好友
 }
