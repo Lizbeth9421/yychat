@@ -12,8 +12,7 @@ import lombok.SneakyThrows;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
@@ -24,7 +23,7 @@ import java.util.HashMap;
  * @Date: 2022/03/19/15:30
  */
 @SuppressWarnings("all")
-public class ClientLogin extends JFrame implements ActionListener {
+public class ClientLogin extends JFrame implements ActionListener, KeyListener {
     //定义标签组件
     JLabel head;
     JButton loginButton, registerButton, cancelButton, lostPassword;
@@ -76,6 +75,26 @@ public class ClientLogin extends JFrame implements ActionListener {
         clearNumberButton = new JButton(new ImageIcon("resources/clear.gif"));
         textField = new JTextField();
         passwordField = new JPasswordField();
+        passwordField.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(final KeyEvent e) {
+                if (e.getKeyChar() == KeyEvent.VK_ENTER){
+                    String name = textField.getText();
+                    String password = new String(passwordField.getPassword());
+                    User user = new User(name, password);
+                    user.setUserType(UserType.USER_LOGIN_VALIDATE);//设置 user 对象类型
+                    Message message = new ClientConnection().loginValidate1(user);
+                    if (message.getMessageType().equals(MessageType.LOGIN_SUCCESS)) {//登录成功
+                        String allFriend = message.getContent();//登录端拿到全部好友名字
+                        FriendList friendList = new FriendList(name, allFriend);//把好友名字传到好友列表窗体
+                        hmFriendList.put(name, friendList);//把好友列表窗体放入map中
+                        dispose();//关闭登陆界面
+                    } else {
+                        JOptionPane.showMessageDialog(null, "密码错误，请重新登陆！");
+                    }
+                }
+            }
+        });
         stealthLogin = new JCheckBox("隐身登录");
         rememberPassword = new JCheckBox("记住密码");
         //初始化YY号码选项卡,设置网格布局模式，默认是FlowLayout布局
@@ -169,4 +188,18 @@ public class ClientLogin extends JFrame implements ActionListener {
         new ClientLogin();
     }
 
+    @Override
+    public void keyTyped(final KeyEvent e) {
+
+    }
+
+    @Override
+    public void keyPressed(final KeyEvent e) {
+
+    }
+
+    @Override
+    public void keyReleased(final KeyEvent e) {
+
+    }
 }

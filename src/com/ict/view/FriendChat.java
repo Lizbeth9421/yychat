@@ -6,8 +6,7 @@ import com.ict.server.control.ClientConnection;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
@@ -17,7 +16,7 @@ import java.io.OutputStream;
  * @Date: 2022/04/11/11:19
  */
 @SuppressWarnings("all")
-public class FriendChat extends JFrame implements ActionListener {
+public class FriendChat extends JFrame implements ActionListener, KeyListener {
     JTextArea textArea;
     JScrollPane scrollPane;
     JTextField textField;
@@ -35,6 +34,30 @@ public class FriendChat extends JFrame implements ActionListener {
         this.add(scrollPane, "Center");
 
         textField = new JTextField(15);//单行文本框
+        textField.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(final KeyEvent e) {
+                if (e.getKeyChar()==KeyEvent.VK_ENTER){
+                    if (textField.getText()!=null || textField.getText()!=""){
+                        textArea.append(textField.getText() + "\r\n");
+                        Message msg = new Message();
+                        msg.setSender(sender);
+                        msg.setReceiver(receiver);
+                        msg.setContent(textField.getText());
+                        //设置聊天信息类型
+                        msg.setMessageType(MessageType.COMMON_CHAT_MESSAGE);
+                        try {
+                            //通过 Socket 对象发送聊天信息到服务器端
+                            new ObjectOutputStream(ClientConnection.s.getOutputStream()).writeObject(msg);
+                        } catch (IOException ioException) {
+                            ioException.printStackTrace();
+                        }
+                    }else {
+                        JOptionPane.showMessageDialog(null, "不能输入空消息");
+                    }
+                }
+            }
+        });
         button = new JButton("发送");
         button.addActionListener(this);
         button.setForeground(Color.blue);
@@ -79,5 +102,20 @@ public class FriendChat extends JFrame implements ActionListener {
 
     public static void main(String[] args) {
         //new FriendChat();
+    }
+
+    @Override
+    public void keyTyped(final KeyEvent e) {
+
+    }
+
+    @Override
+    public void keyPressed(final KeyEvent e) {
+
+    }
+
+    @Override
+    public void keyReleased(final KeyEvent e) {
+
     }
 }
