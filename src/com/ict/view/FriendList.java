@@ -1,8 +1,13 @@
 package com.ict.view;
 
+import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.db.ds.pooled.DbConfig;
 import com.ict.db.common.MessageType;
 import com.ict.db.domain.Message;
+import com.ict.db.domain.User;
+import com.ict.db.util.DbUtils;
 import com.ict.server.control.ClientConnection;
+import com.mysql.cj.util.StringUtils;
 import lombok.SneakyThrows;
 
 import javax.swing.*;
@@ -47,7 +52,7 @@ public class FriendList extends JFrame implements ActionListener, MouseListener,
 
     //定义添加好友面板和按钮
     JPanel addFriendJPanel;
-    JButton addFriendButton, deleteFriendButton;
+    JButton addFriendButton, deleteFriendButton, messageInputButton, updatePasswordButton;
 
 
     JPanel functionJPanel;
@@ -59,15 +64,129 @@ public class FriendList extends JFrame implements ActionListener, MouseListener,
         //创建好友面板中的组件
         friendPanel = new JPanel(new BorderLayout());//卡片 1 设置边界布局模式
 
-        addFriendJPanel = new JPanel(new GridLayout(2, 1));//添加好友面板设置为网格布局
+        addFriendJPanel = new JPanel(new GridLayout(3, 1));//添加好友面板设置为网格布局
         addFriendButton = new JButton("添加好友");
         addFriendButton.addActionListener(this);//在添加好友按钮上注册监听器对象
         deleteFriendButton = new JButton("删除好友");
         deleteFriendButton.addActionListener(this);
+        messageInputButton = new JButton("信息修改");
+        messageInputButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(final ActionEvent e) {
+                //创建填写窗口
+                JFrame frame = new JFrame("信息填写");
+                frame.setBounds(600, 200, 300, 220);
+                JPanel jPanel = new JPanel();
+                jPanel.setLayout(null);
+                JLabel emailAddressLabel = new JLabel("邮箱地址");
+                JLabel phoneLabel = new JLabel("手机号码");
+                JTextField emailAddressTextField = new JTextField();
+                JTextField phoneTextField = new JTextField();
+                emailAddressLabel.setBounds(50, 20, 80, 20);
+                phoneLabel.setBounds(50, 60, 80, 20);
+                emailAddressTextField.setBounds(110, 20, 120, 20);
+                phoneTextField.setBounds(110, 60, 120, 20);
+                frame.add(emailAddressLabel);
+                frame.add(phoneLabel);
+                frame.add(emailAddressTextField);
+                frame.add(phoneTextField);
+                JButton submit = new JButton("提交");
+                submit.setBounds(70, 90, 65, 35);
+                jPanel.add(submit);
+                frame.add(jPanel);
+                frame.setVisible(true);
+                User user = DbUtils.selectUserByName(name);
+                if (ObjectUtil.isNotNull(user)) {
+                    emailAddressTextField.setText(user.getEmail());
+                    phoneTextField.setText(user.getPhone());
+                }
+                submit.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(final ActionEvent e) {
+                        try {
+                            String email = emailAddressTextField.getText();
+                            String phone = phoneTextField.getText();
+                            User updateUser = new User();
+                            updateUser.setId(user.getId());
+                            updateUser.setEmail(email);
+                            updateUser.setPhone(phone);
+                            DbUtils.updateUser(updateUser);
+                            frame.setVisible(false);
+                            JOptionPane.showMessageDialog(null, "修改成功");
+                        } catch (Exception e1) {
+                            JOptionPane.showMessageDialog(null, "修改失败");
+                            e1.printStackTrace();
+                        }
+                    }
+                });
+            }
+        });
+        updatePasswordButton = new JButton("修改密码");
+        updatePasswordButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(final ActionEvent e) {
+                //创建填写窗口
+                JFrame frame = new JFrame("修改密码");
+                frame.setBounds(600, 200, 300, 220);
+                JPanel jPanel = new JPanel();
+                jPanel.setLayout(null);
+                JLabel oldPassword = new JLabel("原密码");
+                JLabel newPassword = new JLabel("新密码");
+                JTextField oldPasswordTextField = new JTextField();
+                oldPasswordTextField.setText("");
+                JTextField newPasswordTextField = new JTextField();
+                newPasswordTextField.setText("");
+                oldPassword.setBounds(50, 20, 80, 20);
+                newPassword.setBounds(50, 60, 80, 20);
+                oldPasswordTextField.setBounds(110, 20, 120, 20);
+                newPasswordTextField.setBounds(110, 60, 120, 20);
+                frame.add(oldPassword);
+                frame.add(newPassword);
+                frame.add(oldPasswordTextField);
+                frame.add(newPasswordTextField);
+                JButton submit = new JButton("提交");
+                submit.setBounds(70, 90, 65, 35);
+                jPanel.add(submit);
+                frame.add(jPanel);
+                frame.setVisible(true);
+                User user = DbUtils.selectUserByName(name);
+                submit.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(final ActionEvent e) {
+                        String oldPasswordTextFieldText = oldPasswordTextField.getText();
+                        String newPasswordTextFieldText = newPasswordTextField.getText();
+                        if (oldPasswordTextFieldText != "" && newPasswordTextFieldText != "") {
+                            if (ObjectUtil.isNotNull(user)) {
+                                if (user.getPassword().equals(oldPasswordTextFieldText)) {
+                                    try {
+                                        User updateUser = new User();
+                                        updateUser.setId(user.getId());
+                                        updateUser.setPassword(newPasswordTextFieldText);
+                                        DbUtils.updateUser(updateUser);
+                                        JOptionPane.showMessageDialog(null, "修改成功请重新登陆！");
+                                        frame.setVisible(false);
+                                        dispose();
+                                        new ClientLogin();
+                                    } catch (Exception e1) {
+                                        JOptionPane.showMessageDialog(null, "修改错误");
+                                    }
+                                } else {
+                                    JOptionPane.showMessageDialog(null, "原密码错误");
+                                }
+                            }
+                        } else {
+                            JOptionPane.showMessageDialog(null, "表单不能为空");
+                        }
+                    }
+                });
+            }
+        });
         myFriendButton1 = new JButton("我的好友");
         //friendPanel.add(addFriendButton, "North");
         functionJPanel.add(addFriendButton);
         functionJPanel.add(deleteFriendButton);
+        functionJPanel.add(messageInputButton);
+        functionJPanel.add(updatePasswordButton);
         friendPanel.add(functionJPanel, "North");
         //friendPanel.add(deleteFriendButton,"North");
         friendListPanel = new JPanel();
@@ -177,7 +296,6 @@ public class FriendList extends JFrame implements ActionListener, MouseListener,
                 }
             }
         }
-
         if (e.getSource() == deleteFriendButton) {
             String deleteFriend = JOptionPane.showInputDialog("请输入要删除好友的名字:");
             System.out.println("deleteFriend" + deleteFriend);

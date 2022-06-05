@@ -136,6 +136,19 @@ public class DbUtils {
         sqlSession.close();
     }
 
+    /**
+     * 更新用户
+     *
+     * @param user
+     */
+    public static void updateUser(User user) {
+        SqlSession sqlSession = MyBatisUtil.getSqlSession();
+        UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
+        userMapper.updateByPrimaryKeySelective(user);
+        sqlSession.commit();
+        sqlSession.close();
+    }
+
 
     /**
      * 登录方法

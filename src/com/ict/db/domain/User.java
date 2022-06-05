@@ -2,18 +2,16 @@ package com.ict.db.domain;
 
 import java.io.Serializable;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
  * @Author: Lizbeth9421
- * @Date: 2022/06/02/16:01
+ * @Date: 2022/06/05/15:33
  */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
 public class User implements Serializable {
     /**
      * id
@@ -35,12 +33,19 @@ public class User implements Serializable {
      */
     private String email;
 
-    private String userType;
+    /**
+     * 手机号
+     */
+    private String phone;
 
-    private static final long serialVersionUID = 1L;
+    private String userType;
 
     public User(final String username, final String password) {
         this.username = username;
         this.password = password;
     }
+
+
+
+    private static final long serialVersionUID = 1L;
 }

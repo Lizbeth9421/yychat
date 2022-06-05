@@ -4,7 +4,7 @@ import com.ict.db.domain.User;import org.apache.ibatis.annotations.Param;
 
 /**
  * @Author: Lizbeth9421
- * @Date: 2022/06/02/16:01
+ * @Date: 2022/06/05/15:33
  */
 public interface UserMapper {
     /**
