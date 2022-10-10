@@ -11,7 +11,7 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="YY聊天室" target="8" />
+      <module name="YY聊天室" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>
