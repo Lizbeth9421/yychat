@@ -7,10 +7,12 @@
         <id column="id" jdbcType="INTEGER" property="id"/>
         <result column="username" jdbcType="VARCHAR" property="username"/>
         <result column="password" jdbcType="VARCHAR" property="password"/>
+        <result column="email" jdbcType="VARCHAR" property="email"/>
+        <result column="phone" jdbcType="VARCHAR" property="phone"/>
     </resultMap>
     <sql id="Base_Column_List">
         <!--@mbg.generated-->
-        id, username, `password`
+        id, username, `password`, email, phone
     </sql>
     <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
         <!--@mbg.generated-->
@@ -27,8 +29,10 @@
     </delete>
     <insert id="insert" keyColumn="id" keyProperty="id" parameterType="com.ict.db.domain.User" useGeneratedKeys="true">
         <!--@mbg.generated-->
-        insert into `user` (username, `password`)
-        values (#{username,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR})
+        insert into `user` (username, `password`, email,
+                            phone)
+        values (#{username,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR},
+                #{phone,jdbcType=VARCHAR})
     </insert>
     <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.ict.db.domain.User"
             useGeneratedKeys="true">
@@ -41,6 +45,12 @@
             <if test="password != null and password != ''">
                 `password`,
             </if>
+            <if test="email != null and email != ''">
+                email,
+            </if>
+            <if test="phone != null and phone != ''">
+                phone,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="username != null and username != ''">
@@ -48,6 +58,12 @@
             </if>
             <if test="password != null and password != ''">
                 #{password,jdbcType=VARCHAR},
+            </if>
+            <if test="email != null and email != ''">
+                #{email,jdbcType=VARCHAR},
+            </if>
+            <if test="phone != null and phone != ''">
+                #{phone,jdbcType=VARCHAR},
             </if>
         </trim>
     </insert>
@@ -61,6 +77,12 @@
             <if test="password != null and password != ''">
                 `password` = #{password,jdbcType=VARCHAR},
             </if>
+            <if test="email != null and email != ''">
+                email = #{email,jdbcType=VARCHAR},
+            </if>
+            <if test="phone != null and phone != ''">
+                phone = #{phone,jdbcType=VARCHAR},
+            </if>
         </set>
         where id = #{id,jdbcType=INTEGER}
     </update>
@@ -68,7 +90,9 @@
         <!--@mbg.generated-->
         update `user`
         set username   = #{username,jdbcType=VARCHAR},
-            `password` = #{password,jdbcType=VARCHAR}
+            `password` = #{password,jdbcType=VARCHAR},
+            email      = #{email,jdbcType=VARCHAR},
+            phone      = #{phone,jdbcType=VARCHAR}
         where id = #{id,jdbcType=INTEGER}
     </update>
 
@@ -77,7 +101,7 @@
         <include refid="Base_Column_List"/>
         from user
         where username = #{username,jdbcType=VARCHAR}
-          and password = #{password,jdbcType=VARCHAR}
+        and password = #{password,jdbcType=VARCHAR}
     </select>
 
     <select id="seekUser" resultType="com.ict.db.domain.User">
@@ -87,5 +111,4 @@
         from user
         where username = #{username,jdbcType=VARCHAR}
     </select>
-
 </mapper>

@@ -13,7 +13,7 @@ public class test {
 
     @Test
     public void test() throws MessagingException {
-        EmailUtils.sendEmail("3512348186@qq.com", "1111");
+        EmailUtils.sendEmail("@qq.com", "1111");
     }
 }
 
